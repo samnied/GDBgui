@@ -2,7 +2,7 @@
 """
 Created on Sun Nov  1 14:58:44 2020
 
-@author: Sam
+@author: Samuel Niederer
 """
 
 class GDBinfo():

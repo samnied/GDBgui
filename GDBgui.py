@@ -5,17 +5,18 @@ generate code from Qt designer with following command
 pyuic5 –x "filename".ui –o "filename".py
 pyuic5 –x design.ui –o design.py
 
-@author: Sam
+@author: Samuel Niederer
 """
 import sys
 import subprocess
 import threading
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from design import Ui_MainWindow
-from FileDialog import FileDialog
+from QTdesign import Ui_MainWindow
+from QTFileDialog import FileDialog
 from GDBinfo import GDBinfo
 from Size import Size
+from Data import Data
 
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
@@ -101,16 +102,26 @@ class Ui_MainWindowUser(Ui_MainWindow):
         for t in self.threads:
             t.join()
         print("shut down GDBgui ...")
-      
+    
+    def infoLog(self, msg):
+        if msg == "clear":
+            self.errorOutput.clear()
+        else:
+            self.errorOutput.insertPlainText(msg + "\n")
+    
+            
         
     def runMeasurement(self):
-        self.errorOutput.clear()
+        self.infoLog("clear")
         self.textOutput.clear()
         self.progressBar.setValue(0)
         
-        self.textOutput.insertPlainText(self.getSizeInfo())
+        # print code size information
+        self.textOutput.insertPlainText(self.getSizeInfo() + "\n")
+        
         
         #start Stlink server
+        self.infoLog("Start Stlink server...")
         t1 = threading.Thread(target=self.openSt)
         self.threads.append(t1)
         t1.start()
@@ -122,9 +133,13 @@ class Ui_MainWindowUser(Ui_MainWindow):
         self.threads.append(t2)
         t2.start()
         
+        # wait for thread to finish
         t2.join()
         self.progressBar.setValue(100)
+        self.infoLog("Successfully run GDB...")
         
+        d = Data()
+        self.textOutput.insertPlainText(d.getStr())
 
         
 if __name__ == "__main__":

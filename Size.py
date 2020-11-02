@@ -2,7 +2,7 @@
 """
 Created on Sun Nov  1 13:54:17 2020
 
-@author: Sam
+@author: Samuel Niederer
 """
 import os
 class Size():

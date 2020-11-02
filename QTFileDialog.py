@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sun Nov  1 13:07:24 2020
-
-@author: Sam
-"""
 from PyQt5.QtWidgets import QWidget, QFileDialog
 
 class FileDialog(QWidget):
