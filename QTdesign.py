@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'design.ui'
+# Form implementation generated from reading ui file 'QTdesign.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
@@ -20,12 +20,12 @@ class Ui_MainWindow(object):
         font.setPointSize(10)
         self.btnRun.setFont(font)
         self.btnRun.setObjectName("btnRun")
-        self.pathEdit1 = QtWidgets.QLineEdit(self.centralwidget)
-        self.pathEdit1.setGeometry(QtCore.QRect(140, 50, 371, 22))
-        self.pathEdit1.setObjectName("pathEdit1")
-        self.pathEdit2 = QtWidgets.QLineEdit(self.centralwidget)
-        self.pathEdit2.setGeometry(QtCore.QRect(140, 90, 371, 22))
-        self.pathEdit2.setObjectName("pathEdit2")
+        self.elfPathEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.elfPathEdit.setGeometry(QtCore.QRect(140, 50, 371, 22))
+        self.elfPathEdit.setObjectName("elfPathEdit")
+        self.savePathEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.savePathEdit.setGeometry(QtCore.QRect(140, 90, 371, 22))
+        self.savePathEdit.setObjectName("savePathEdit")
         self.label1 = QtWidgets.QLabel(self.centralwidget)
         self.label1.setGeometry(QtCore.QRect(50, 50, 61, 16))
         font = QtGui.QFont()
@@ -38,12 +38,12 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.label2.setFont(font)
         self.label2.setObjectName("label2")
-        self.btnSearch1 = QtWidgets.QPushButton(self.centralwidget)
-        self.btnSearch1.setGeometry(QtCore.QRect(520, 50, 93, 28))
-        self.btnSearch1.setObjectName("btnSearch1")
-        self.btnSearch2 = QtWidgets.QPushButton(self.centralwidget)
-        self.btnSearch2.setGeometry(QtCore.QRect(520, 90, 93, 28))
-        self.btnSearch2.setObjectName("btnSearch2")
+        self.btnSearchElfPath = QtWidgets.QPushButton(self.centralwidget)
+        self.btnSearchElfPath.setGeometry(QtCore.QRect(520, 50, 93, 28))
+        self.btnSearchElfPath.setObjectName("btnSearchElfPath")
+        self.btnSearchSavePath = QtWidgets.QPushButton(self.centralwidget)
+        self.btnSearchSavePath.setGeometry(QtCore.QRect(520, 90, 93, 28))
+        self.btnSearchSavePath.setObjectName("btnSearchSavePath")
         self.textOutput = QtWidgets.QPlainTextEdit(self.centralwidget)
         self.textOutput.setGeometry(QtCore.QRect(40, 220, 411, 301))
         font = QtGui.QFont()
@@ -65,7 +65,7 @@ class Ui_MainWindow(object):
         self.progressBar.setObjectName("progressBar")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 26))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 20))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -81,8 +81,8 @@ class Ui_MainWindow(object):
         self.btnRun.setText(_translate("MainWindow", "RUN"))
         self.label1.setText(_translate("MainWindow", "Elf File"))
         self.label2.setText(_translate("MainWindow", "Path"))
-        self.btnSearch1.setText(_translate("MainWindow", "Search"))
-        self.btnSearch2.setText(_translate("MainWindow", "Search"))
+        self.btnSearchElfPath.setText(_translate("MainWindow", "Search"))
+        self.btnSearchSavePath.setText(_translate("MainWindow", "Search"))
         self.label3.setText(_translate("MainWindow", "Status information"))
 
 

@@ -3,53 +3,60 @@
 Created on Sun Nov  1 12:40:53 2020
 generate code from Qt designer with following command
 pyuic5 –x "filename".ui –o "filename".py
-pyuic5 –x design.ui –o design.py
+pyuic5 –x QTdesign.ui –o QTdesign.py
 
 @author: Samuel Niederer
 """
 import sys
 import subprocess
 import threading
+from datetime import datetime
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QFileDialog
 
 from QTdesign import Ui_MainWindow
-from QTFileDialog import FileDialog
 from GDBinfo import GDBinfo
 from Size import Size
 from Data import Data
+from StackInfo import StackInfo
 
+#adjust for high dpi screen
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
 class Ui_MainWindowUser(Ui_MainWindow):
     def __init__(self, MainWindow):
         self.setupUi(MainWindow)
         
-        self.btnRun.clicked.connect(self.runMeasurement)
-        self.btnSearch1.clicked.connect(self.selectElf)
-        self.btnSearch2.clicked.connect(self.selectLog)
-        
+        # connect signals and slots
         app.aboutToQuit.connect(self.closeEvent)
-        self.progressBar.setValue(0)
+        self.btnRun.clicked.connect(self.runMeasurement)
+        self.btnSearchElfPath.clicked.connect(self.selectElf)
+        self.btnSearchSavePath.clicked.connect(self.selectLog)
         
         # set default value
         elfPath = r"C:\Users\samue\STM32CubeIDE\workspace_1.4.0\EHS\Debug\EHS.elf"
-        self.pathEdit1.setText(elfPath)
+        self.elfPathEdit.setText(elfPath)
+        savePath = "../logFiles"
+        self.savePathEdit.setText(savePath)
         
         self.threads = list()
         
+        self.progressBar.setValue(0)
+        
         
     def selectElf(self):
-        fd = FileDialog()
-        fileName = fd.openFileNameDialog()
+        fileName = QtWidgets.QFileDialog.getOpenFileName()[0]
         if fileName:
-            self.pathEdit1.setText(fileName)
+            self.elfPathEdit.setText(fileName)
     
     
     def selectLog(self):
-        fd = FileDialog()
-        fileName = fd.saveFileDialog()
+        fileName = QFileDialog.getExistingDirectory(None, 
+                                                  'Select directory', 
+                                                  "", 
+                                                  QFileDialog.ShowDirsOnly)
         if fileName:
-            self.pathEdit2.setText(fileName)
+            self.savePathEdit.setText(fileName)
         
         
     def openSt(self):
@@ -79,7 +86,7 @@ class Ui_MainWindowUser(Ui_MainWindow):
     def runGDB(self):
         print("Try to run GDB...")
         # self.errorOutput.insertPlainText("Try to run GDB... \n")
-        x = subprocess.Popen(GDBinfo.openGDB + " " + self.pathEdit1.text(), stdout=subprocess.PIPE)
+        x = subprocess.Popen(GDBinfo.openGDB + " " + self.elfPathEdit.text(), stdout=subprocess.PIPE)
         
         while True:
             s = x.stdout.readline().decode('utf-8', errors="ignore")
@@ -93,7 +100,7 @@ class Ui_MainWindowUser(Ui_MainWindow):
            
             
     def getSizeInfo(self):
-        filePath = self.pathEdit1.text()
+        filePath = self.elfPathEdit.text()
         return Size.getStr(filePath)
     
     
@@ -109,12 +116,23 @@ class Ui_MainWindowUser(Ui_MainWindow):
         else:
             self.errorOutput.insertPlainText(msg + "\n")
     
+    def saveFile(self, data):
+        filePath = self.savePathEdit.text()
+        fileName = self.elfPathEdit.text()
+        fileName =  fileName.split("\\")[-1].split(".")[0]
+        fileName += "_" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S") + ".txt"
+        
+        with open(filePath + "\\" + fileName,  mode="w") as f:
+            f.write(data)
             
         
     def runMeasurement(self):
         self.infoLog("clear")
         self.textOutput.clear()
         self.progressBar.setValue(0)
+        
+        # run gdb objdump and save resut to .txt
+        StackInfo.run(self.elfPathEdit.text())
         
         # print code size information
         self.textOutput.insertPlainText(self.getSizeInfo() + "\n")
@@ -140,6 +158,8 @@ class Ui_MainWindowUser(Ui_MainWindow):
         
         d = Data()
         self.textOutput.insertPlainText(d.getStr())
+        
+        self.saveFile(self.textOutput.toPlainText())
 
         
 if __name__ == "__main__":

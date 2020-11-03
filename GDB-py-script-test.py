@@ -15,28 +15,26 @@ connect()
 addr = None
 with open("stackB.txt") as f:
     addr = str(int(f.read(), 16))
+    
 
 gdb.execute("load")
-gdb.execute("monitor reset")
-
 gdb.execute("break StackTrace")
+gdb.execute("break main.cpp:73")
 gdb.execute("continue")
+
 gdb.execute("set variable this.stackB =" + addr)
-
-gdb.execute("break end")
 gdb.execute("continue")
 
-data = "t" + gdb.execute("p *this.tBuff@this.tIndex", to_string=True)
-data += "s" + gdb.execute("p *this.sBuff@this.sIndex", to_string=True)
+s = gdb.execute("p *0x20001000")
 
-with open(r'log.txt', mode="w") as f:
-    f.write(data)
+# with open(r'log.txt', mode="w") as f:
+#     f.write(data)
 
-print("gdb-script-finished")
+# print("gdb-script-finished")
     
-# disconnect properly before quitting
-gdb.execute("detach")   
-gdb.execute("quit")  
+# # disconnect properly before quitting
+# gdb.execute("detach")   
+# gdb.execute("quit")  
 
 
     
