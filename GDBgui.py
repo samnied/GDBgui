@@ -59,7 +59,7 @@ class Ui_MainWindowUser(Ui_MainWindow):
             self.savePathEdit.setText(fileName)
         
         
-    def openSt(self):
+    def openStlink(self):
         print("Try to connect to stlink...")
         # self.errorOutput.insertPlainText("Try to connect to stlink... \n")
         x = subprocess.Popen(GDBinfo.openStlink, stdout=subprocess.PIPE)
@@ -69,23 +69,28 @@ class Ui_MainWindowUser(Ui_MainWindow):
             if s == '' and x.poll() is not None:
                 break
             elif "ST-LINK device initialization OK" in s:
-                out = "stlink succsessfully connected\n"
+                out = s + "\n"
                 print(out)
                 # self.errorOutput.insertPlainText(out)
+            elif "Accepted connection" in s:
+                out = s + "\n"
+                print(out)
             elif "error" in s:
                 out = "stlink failed to connect... unplug usb cable and try again\n"
                 # self.errorOutput.insertPlainText(out)
                 print(out)
                 break
             elif " stlink shut down\n" in s:
+                out = "Shut down Stlink server \n"
                 print(out)
                 # self.errorOutput.insertPlainText("Shut down Stlink server\n")
                 break
+        print("end of function openStlink")
     
     
-    def runGDB(self):
+    def runGDB(self, stThread):
         print("Try to run GDB...")
-        # self.errorOutput.insertPlainText("Try to run GDB... \n")
+        
         x = subprocess.Popen(GDBinfo.openGDB + " " + self.elfPathEdit.text(), stdout=subprocess.PIPE)
         
         while True:
@@ -96,6 +101,9 @@ class Ui_MainWindowUser(Ui_MainWindow):
                 print("Successfully run gdb...")
                 # self.errorOutput.insertPlainText("Successfully run gdb...")
                 # self.progressBar.setValue(100)
+                break
+            elif "gdb-script-error" in s:
+                print("an error occured while running gdb, stop execution")
                 break
            
             
@@ -140,14 +148,14 @@ class Ui_MainWindowUser(Ui_MainWindow):
         
         #start Stlink server
         self.infoLog("Start Stlink server...")
-        t1 = threading.Thread(target=self.openSt)
+        t1 = threading.Thread(target=self.openStlink)
         self.threads.append(t1)
         t1.start()
         
         self.progressBar.setValue(50)
         
         #start GDB and run script
-        t2 = threading.Thread(target=self.runGDB)
+        t2 = threading.Thread(target=self.runGDB(t1))
         self.threads.append(t2)
         t2.start()
         

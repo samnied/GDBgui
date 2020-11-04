@@ -7,7 +7,12 @@ Created on Mon Nov 2 2020
 from datetime import datetime
 
 def connect():
-    gdb.execute("target remote localhost:61234")
+    try:
+        gdb.execute("target remote localhost:61234")
+    except Exception as e:
+        print("gdb-script-error, {s}")
+        gdb.execute("quit")  
+
     
 gdb.execute("set pagination off")
 connect()
@@ -19,9 +24,9 @@ with open("stackB.txt") as f:
 gdb.execute("load")
 gdb.execute("monitor reset")
 
-gdb.execute("break StackTrace")
-gdb.execute("continue")
-gdb.execute("set variable this.stackB =" + addr)
+# gdb.execute("break StackTrace")
+# gdb.execute("continue")
+# gdb.execute("set variable this.stackB =" + addr)
 
 gdb.execute("break end")
 gdb.execute("continue")
