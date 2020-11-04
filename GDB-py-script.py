@@ -24,9 +24,9 @@ with open("stackB.txt") as f:
 gdb.execute("load")
 gdb.execute("monitor reset")
 
-gdb.execute("break StackTrace")
-gdb.execute("continue")
-gdb.execute("set variable this.stackB =" + addr)
+# gdb.execute("break StackTrace")
+# gdb.execute("continue")
+# gdb.execute("set variable this.stackB =" + addr)
 
 gdb.execute("break end")
 gdb.execute("continue")
