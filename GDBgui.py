@@ -7,106 +7,29 @@ pyuic5 –x QTdesign.ui –o QTdesign.py
 
 @author: Samuel Niederer
 """
-import time
 import sys
-import subprocess
-import threading
 from datetime import datetime
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import *
 
 from QTdesign import Ui_MainWindow
-from GDBinfo import GDBinfo
 from Size import Size
 from Data import Data
 from StackInfo import StackInfo
+from GDB import GDBThread
+from Stlink import StThread
 
 #adjust for high dpi screen
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
-
-
-class StThread(QThread):
-    # class used to start stlink server from consol
-       
-    msg = pyqtSignal(str)
-    progress = pyqtSignal(int)
-
-    def __init__(self):
-        super(StThread, self).__init__()
-
-    def getProcess(self):
-        return self.process
-    
-    def run(self):
-        self.msg.emit("Try to connect to stlink...")
-      
-        x = subprocess.Popen(GDBinfo.openStlink, stdout=subprocess.PIPE)
-        self.process = x
-        
-        while True:
-            # read consol output form stlink server
-            s = x.stdout.readline().decode('utf-8', errors="ignore")
-            
-            if "ST-LINK device initialization OK" in s:
-                self.msg.emit(s)
-                self.progress.emit(30)
-            elif "Accepted connection" in s:
-               self.msg.emit(s)
-            elif "error" in s:
-                self.msg.emit(s)
-                break
-            elif "stlink shut down\n" in s:
-                self.msg.emit(s)
-                break
-
-class GDBThread(QThread):
-    # class used to start stlink server from consol
-       
-    msg = pyqtSignal(str)
-    finished = pyqtSignal(str)
-    progress = pyqtSignal(int)
-    
-    def __init__(self):
-        super(GDBThread, self).__init__()
-        self.elfPath = ""
-        
-    def getProcess(self):
-        return self.process
-    
-    def setElfPath(self, path):
-        self.elfPath = path
-        
-    def run(self):
-        self.msg.emit("Run GDB-Server...")
-        self.progress.emit(55)
-        
-        x = subprocess.Popen(GDBinfo.openGDB + " " + self.elfPath, stdout=subprocess.PIPE)
-        self.process = x
-        
-        while True:
-            # read consol output form stlink server
-            s = x.stdout.readline().decode('utf-8', errors="ignore")
-            
-            if "gdb-script-finished" in s:
-                self.msg.emit(s)
-                self.progress.emit(75)
-                self.finished.emit("ok")
-                break
-            elif "gdb.error" in s:
-               self.msg.emit(s)
-            elif "error" in s:
-                self.msg.emit(s)
-                break
-            elif "gdb-script-error" in s:
-                self.msg.emit(s)
-                self.finished.emit("error")
-                break
-            self.msg.emit(s)
-        
+     
     
 class Ui_MainWindowUser(Ui_MainWindow):
+    """ This class holds all GUI elements.
+    """
     def __init__(self, MainWindow):
+        """ Initializes the main window.
+        """
         self.setupUi(MainWindow)
         
         # connect signals and slots
@@ -114,7 +37,6 @@ class Ui_MainWindowUser(Ui_MainWindow):
         self.btnRun.clicked.connect(self.runMeasurement)
         self.btnSearchElfPath.clicked.connect(self.selectElf)
         self.btnSearchSavePath.clicked.connect(self.selectLog)
-        
         
         # set default value
         elfPath = r"C:\Users\samue\STM32CubeIDE\workspace_1.4.0\EHS\Debug\EHS.elf"
@@ -168,15 +90,18 @@ class Ui_MainWindowUser(Ui_MainWindow):
     
     
     def closeEvent(self):
+        """ Cleans up everything when the main window gets closed.
+        """
         self.stThread.getProcess().terminate()
         self.stThread.terminate()
-         
-        print("wait for wait for threads to be finished")
-        for t in self.threads:
-            t.join()
-        print("shut down GDBgui ...")
+        
+        self.gdbThread.getProcess().terminate()
+        self.gdbThread.terminate()
+    
     
     def stlinkLog(self, msg):
+        """ Updates the stlink output window.
+        """
         if msg == "clear":
             self.stlinkOutput.clear()
         else:
@@ -187,7 +112,10 @@ class Ui_MainWindowUser(Ui_MainWindow):
                 msg += "\n"
             self.stlinkOutput.insertPlainText(msg)
     
+    
     def gdbLog(self, msg):
+        """ Updates the gdb output window.
+        """
         if msg == "clear":
             self.gdbOutput.clear()
         else:
@@ -198,7 +126,10 @@ class Ui_MainWindowUser(Ui_MainWindow):
                 msg += "\n"
             self.gdbOutput.insertPlainText(msg)
     
+    
     def measureLog(self, msg):
+        """ Updates the measurement output windwow.
+        """
         if msg == "clear":
             self.textOutput.clear()
         else:
@@ -211,6 +142,8 @@ class Ui_MainWindowUser(Ui_MainWindow):
             
 
     def saveFile(self, data):
+        """ Saves data to a text file.
+        """
         savePath = self.savePathEdit.text()
         filePath = self.elfPathEdit.text()
         
@@ -226,12 +159,20 @@ class Ui_MainWindowUser(Ui_MainWindow):
             data = comment + "\n\n" + data 
             f.write(data)
        
+        
     def progress(self, percent):
+        """ Updates the progress bar.
+        """
         self.progressBar.setValue(percent)
         
+        
     def runMeasurement(self):
+        """ Runs a measurement.
+        """
+        
         self.progress(0)
         
+        # clear all text ouputs
         self.stlinkLog("clear")
         self.gdbLog("clear")
         self.measureLog("clear")

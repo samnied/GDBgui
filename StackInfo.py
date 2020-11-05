@@ -2,7 +2,7 @@
 """
 Created on Tue Nov  3 13:18:18 2020
 
-@author: Sam
+@author: Samuel Niederer
 """
 
 import subprocess

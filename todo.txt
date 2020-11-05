@@ -1,0 +1,24 @@
+
+
+
+- verhindern, dass altes log file benutz wird
+    - file danach löschen ?
+
+- prog um idfferenz von messungen auszugeben (plot)
+
+
+- qtthread verwenden für live output
+
+
+- gdb-py-script:
+    - fehler ausgeben wenn zum beispiel break point nicht gefunden wird
+    - fehler in gui abfangen
+    
+
+    
+- gui option für log file auswerten oder nicht
+
+- gui kommentar feld, main.cpp anhägen
+
+
+Jetzt IAR fertig installieren und test des programms
