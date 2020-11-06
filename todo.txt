@@ -4,10 +4,8 @@
 - verhindern, dass altes log file benutz wird
     - file danach löschen ?
 
-- prog um idfferenz von messungen auszugeben (plot)
+- prog um differenz von messungen auszugeben (plot)
 
-
-- qtthread verwenden für live output
 
 
 - gdb-py-script:

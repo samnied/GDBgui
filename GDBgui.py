@@ -72,16 +72,6 @@ class Ui_MainWindowUser(Ui_MainWindow):
                                                   QFileDialog.ShowDirsOnly)
         if fileName:
             self.savePathEdit.setText(fileName)
-            
-    
-    def gdbFinished(self, log):
-        if log == "ok":
-            d = Data()
-            self.measureLog(d.getStr())
-            self.saveFile(self.textOutput.toPlainText())
-            self.progress(100)
-        if log == "error":
-            self.measureLog("an error occured, no measureoutput")
            
         
     def getSizeInfo(self):
@@ -155,7 +145,7 @@ class Ui_MainWindowUser(Ui_MainWindow):
         fileName += "_" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S") + ".txt"
        
         with open(savePath + "\\" + fileName,  mode="w") as f:
-            comment = self.commentEdit.text()
+            comment = self.commentEdit.toPlainText()
             data = comment + "\n\n" + data 
             f.write(data)
        
@@ -164,6 +154,17 @@ class Ui_MainWindowUser(Ui_MainWindow):
         """ Updates the progress bar.
         """
         self.progressBar.setValue(percent)
+        
+    def gdbFinished(self, log):
+        """ Saves data to file.
+        """
+        if log == "ok":
+            d = Data()
+            self.measureLog(d.getStr())
+            self.saveFile(self.textOutput.toPlainText())
+            self.progress(100)
+        if log == "error":
+            self.measureLog("an error occured, no measureoutput")
         
         
     def runMeasurement(self):
