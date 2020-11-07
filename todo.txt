@@ -19,4 +19,4 @@
 - gui kommentar feld, main.cpp anhägen
 
 
-Jetzt IAR fertig installieren und test des programms
+in format klasse funtkion um csv zu genrieren

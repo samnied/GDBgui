@@ -14,11 +14,10 @@ from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import *
 
 from QTdesign import Ui_MainWindow
-from Size import Size
-from Data import Data
 from StackInfo import StackInfo
 from GDB import GDBThread
 from Stlink import StThread
+from Format import Format
 
 #adjust for high dpi screen
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
@@ -72,12 +71,6 @@ class Ui_MainWindowUser(Ui_MainWindow):
                                                   QFileDialog.ShowDirsOnly)
         if fileName:
             self.savePathEdit.setText(fileName)
-           
-        
-    def getSizeInfo(self):
-        filePath = self.elfPathEdit.text()
-        return Size.getStr(filePath)
-    
     
     def closeEvent(self):
         """ Cleans up everything when the main window gets closed.
@@ -129,26 +122,6 @@ class Ui_MainWindowUser(Ui_MainWindow):
             if(not "\n" in msg):
                 msg += "\n"
             self.textOutput.insertPlainText(msg)
-            
-
-    def saveFile(self, data):
-        """ Saves data to a text file.
-        """
-        savePath = self.savePathEdit.text()
-        filePath = self.elfPathEdit.text()
-        
-        sep = "/"
-        if("\\" in filePath):
-            sep = "\\"
-            
-        fileName = filePath.split(sep)[-1].split(".")[0]
-        fileName += "_" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S") + ".txt"
-       
-        with open(savePath + "\\" + fileName,  mode="w") as f:
-            comment = self.commentEdit.toPlainText()
-            data = comment + "\n\n" + data 
-            f.write(data)
-       
         
     def progress(self, percent):
         """ Updates the progress bar.
@@ -159,18 +132,17 @@ class Ui_MainWindowUser(Ui_MainWindow):
         """ Saves data to file.
         """
         if log == "ok":
-            d = Data()
+            d = Format(self.elfPathEdit.text(), self.commentEdit.toPlainText())
             self.measureLog(d.getStr())
-            self.saveFile(self.textOutput.toPlainText())
+            d.saveTxt(self.savePathEdit.text())
+            
             self.progress(100)
         if log == "error":
             self.measureLog("an error occured, no measureoutput")
         
-        
     def runMeasurement(self):
         """ Runs a measurement.
         """
-        
         self.progress(0)
         
         # clear all text ouputs
@@ -179,10 +151,7 @@ class Ui_MainWindowUser(Ui_MainWindow):
         self.measureLog("clear")
         
         # run gdb objdump and save resut to .txt
-        StackInfo.run(self.elfPathEdit.text())
-        # print code size information
-        self.measureLog(self.getSizeInfo())
-          
+        StackInfo.run(self.elfPathEdit.text())         
     
         # check if there is allready an stlink sever running
         if self.stThread.isRunning():

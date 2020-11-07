@@ -5,28 +5,31 @@ Created on Tue Nov  3 13:18:18 2020
 @author: Sam
 """
 
-import subprocess
+import numpy as np
 
-progPath = r"C:\ST\STM32CubeIDE_1.4.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-arm-embedded.7-2018-q2-update.win32_1.4.0.202007081208\tools\bin\arm-none-eabi-objdump.exe"
-flags = "-t"
-elfPath = r"C:\Users\samue\STM32CubeIDE\workspace_1.4.0\EHS\Debug\EHS.elf"
-cmdStr = " ".join([progPath, flags, elfPath])
-stackBpath = "stackB.txt"
+class Data():
+    def __init__(self, fileName):
+        self.fileName = fileName
+        self.t = list()
+        self.s = list 
+        self.text = -1
+        self.data = -1
+        self.bss = -1
+        self.dec = -1
+        self.code = -1
+        self.data = list()
+        
+    def run(self):
+        with open(self.fileName) as f:
+            self.data = [self.text, self.data, self.bss, self.dec, self.code, self.t, self.s]
+            
+            for i, line in enumerate(f.readlines()):
+                d = line.strip('\n').split(',')
+                d.pop(0)
+                self.data[i] = [int(i) for i in d]
+        
 
-sb = subprocess.Popen(cmdStr, stdout=subprocess.PIPE)
-
-found = False
-for line in sb.stdout.readlines():
-    line = line.decode('utf-8', errors="ignore")
-    if "_user_heap_stack" in line:
-        with open(stackBpath, mode="w") as f:
-            f.write(line.split()[0])
-        found = True
-    if found:
-        break
-    
-with open(stackBpath) as f:
-    x = f.read()
-    x = int(x, 16)
-    x = str(x)
-    print(x)
+d = Data("test.csv")
+d.run()
+for i in d.data:
+    print(i)
