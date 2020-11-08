@@ -11,6 +11,8 @@ class GdbData():
     def __init__(self, filePath = "log.txt"):
         self._t = None
         self._s = None
+        self._h = None
+        self.d = dict()
         
         with open(filePath) as f:
             for line in f.readlines():
@@ -19,12 +21,9 @@ class GdbData():
                 data = line[start:end].split(", ")
                 data = [int(i) for i in data]
                 
-                if line.startswith("t"):
-                    self._t = data
-                elif line.startswith("s"):
-                    self._s = data
+                self.d.update({line[0]:data})
     
     def getDict(self):
         """ Returns a dictionary with all meassurands.
         """
-        return {'t':self._t, 's':self._s}
+        return self.d
