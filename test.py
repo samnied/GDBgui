@@ -14,6 +14,7 @@ class Data():
         self.fileName = fileName
         self.t = list()
         self.s = list() 
+        self.h = list()
         self.text = list()
         self.data = list()
         self.bss = list()
@@ -24,7 +25,7 @@ class Data():
         
     def run(self):
         with open(self.fileName) as f:
-            self.arr = [self.text, self.data, self.bss, self.dec, self.hex, self.t, self.s]
+            self.arr = [self.text, self.data, self.bss, self.dec, self.hex, self.t, self.s, self.h]
             
             for i, line in enumerate(f.readlines()):
                 d = line.strip('\n').split(',')
@@ -36,7 +37,8 @@ class Data():
                     self.arr[i].extend([int(i) for i in d])
         
 
-d1 = Data("../logFiles/EHS_07-11-2020_20-22-28.csv")
+# d1 = Data("../logFiles/EHS_07-11-2020_20-22-28.csv")
+d1 = Data("../logFiles/EHS_08-11-2020_13-55-47.csv")
 d2 = Data("../logFiles/EHS_07-11-2020_20-23-26.csv")
 
 t1 = np.asarray(d1.t)
