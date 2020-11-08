@@ -31,6 +31,9 @@ class Ui_MainWindowUser(Ui_MainWindow):
         """
         self.setupUi(MainWindow)
         
+        self.gdbOutput.ensureCursorVisible()
+        self.gdbOutput.centerOnScroll()
+        
         # connect signals and slots
         app.aboutToQuit.connect(self.closeEvent)
         self.btnRun.clicked.connect(self.runMeasurement)
@@ -107,7 +110,7 @@ class Ui_MainWindowUser(Ui_MainWindow):
             # print msg to gui text element
             if(not "\n" in msg):
                 msg += "\n"
-            self.gdbOutput.insertPlainText(msg)
+            self.gdbOutput.appendPlainText(msg)
     
     
     def measureLog(self, msg):
@@ -133,8 +136,9 @@ class Ui_MainWindowUser(Ui_MainWindow):
         """
         if log == "ok":
             d = Format(self.elfPathEdit.text(), self.commentEdit.toPlainText())
-            self.measureLog(d.getStr())
+            self.measureLog(d.getProtocol())
             d.saveTxt(self.savePathEdit.text())
+            d.saveCsv(self.savePathEdit.text())
             
             self.progress(100)
         if log == "error":

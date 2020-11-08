@@ -9,9 +9,6 @@ import textwrap
 from CodeSize import CodeSize
 from GdbData import GdbData
 
-# todo read this info from csv
-# todo adjust gdb-py-script to directly creat csv file
-
 class Format():
     
     """ This class formats the data.
@@ -40,18 +37,16 @@ class Format():
         self._comment = s   
         
     def getTitle(self):
+        """ Returns the projecttitel of the .elf file.
+        """
         sep = "/"
         if("\\" in self._elfPath):
             sep = "\\"
         return self._elfPath.split(sep)[-1].split(".")[0]
-        
-    def saveTxt(self, savePath):
-        fileName = self.getTitle()
-        fileName += "_" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S") + ".txt"
-        with open(savePath + "\\" + fileName,  mode="w") as f:
-            f.write(self.getStr())
     
     def getCsInfo(self):
+        """ Returns formatted code size information.
+        """
         cs = CodeSize(self._elfPath)
         data = cs.getDict()
       
@@ -71,6 +66,8 @@ class Format():
         return s
     
     def getMeasurement(self):
+        """ Returns formatted meassurement data.
+        """
         d = GdbData()
         data = d.getDict()
         
@@ -99,12 +96,13 @@ class Format():
         s += f"{label1:<{dL1}}  | {label2:<{dL2}}\n"
         s += f"{'':-<{dL1 + dL2 + 4}}\n"
         for time, size in zip(data['t'], data['s']):
-            s += f"{time:>{dL1}}  |{size:>{dL2}}\n"
-            
+            s += f"{time:>{dL1}}  |{size:>{dL2}}\n" 
         return s
         
 
-    def getStr(self):       
+    def getProtocol(self):       
+        """ Returns a measurement protocol.
+        """
         #header
         s = ""
         s += f"{'':=^{self._pw}}\n"
@@ -119,5 +117,31 @@ class Format():
         
         # measurement
         s += self.getMeasurement()
-        
         return s
+        
+    def saveTxt(self, savePath):
+        """ Saves protocol as .txt file.
+        """
+        fileName = self.getTitle()
+        fileName += "_" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S") + ".txt"
+        with open(savePath + "\\" + fileName,  mode="w") as f:
+            f.write(self.getProtocol())
+            
+    def saveCsv(self, savePath):
+        s = ""
+        d = GdbData()
+        cs = CodeSize(self._elfPath)
+        data = cs.getDict()
+        
+        for k in data.keys():
+            s += f"{k},{data[k]}\n"
+        
+        data = d.getDict()
+        for k in data.keys():
+            s += k + ','
+            s += ','.join([str(i) for i in data[k]]) + "\n"
+        
+        fileName = self.getTitle()
+        fileName += "_" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S") + ".csv"
+        with open(savePath + "\\" + fileName,  mode="w") as f:
+            f.write(s)
