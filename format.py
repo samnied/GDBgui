@@ -73,6 +73,7 @@ class Format():
         
         label1 = "Time"
         label2 = "StackSize"
+        label3 = "HeapSize"
         
         # calculate max data string length
         dL1 = list()
@@ -87,16 +88,22 @@ class Format():
             dL2.append(len(str(elem)))
         dL2 = max(dL2) + 5
         dL2 = max(dL2, len(label2))
-
+        
+        # calculate max data string length
+        dL3 = list()
+        for elem in data['s']:
+            dL3.append(len(str(elem)))
+        dL3 = max(dL3) + 5
+        dL3 = max(dL3, len(label3))
 
         subTitle = "GDB Measurement:\n"
         s = subTitle
         s += f"{'':-<{len(subTitle)}}\n\n"
         
-        s += f"{label1:<{dL1}}  | {label2:<{dL2}}\n"
-        s += f"{'':-<{dL1 + dL2 + 4}}\n"
-        for time, size in zip(data['t'], data['s']):
-            s += f"{time:>{dL1}}  |{size:>{dL2}}\n" 
+        s += f"{label1:<{dL1}}  | {label2:<{dL2}} | {label3:<{dL3}}\n"
+        s += f"{'':-<{dL1 + dL2 + dL3 + 7}}\n"
+        for time, sSize, hSize in zip(data['t'], data['s'], data['h']):
+            s += f"{time:>{dL1}}  |{sSize:>{dL2}}  |{hSize:>{dL3}}\n" 
         return s
         
 
@@ -145,3 +152,8 @@ class Format():
         fileName += "_" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S") + ".csv"
         with open(savePath + "\\" + fileName,  mode="w") as f:
             f.write(s)
+
+if __name__ == "__main__":           
+    f = Format(r"C:\Users\samue\STM32CubeIDE\workspace_1.4.0\EHS\Debug\EHS.elf", "")
+    print(f.getProtocol())
+    f.saveCsv("../logFiles")
