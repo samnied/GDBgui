@@ -38,7 +38,7 @@ class Data():
         
 
 # d1 = Data("../logFiles/EHS_07-11-2020_20-22-28.csv")
-d1 = Data("../logFiles/EHS_08-11-2020_13-55-47.csv")
+d1 = Data("../logFiles/EHS_07-11-2020_20-22-28.csv")
 d2 = Data("../logFiles/EHS_07-11-2020_20-23-26.csv")
 
 t1 = np.asarray(d1.t)
