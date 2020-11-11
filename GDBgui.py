@@ -8,6 +8,7 @@ pyuic5 –x QTdesign.ui –o QTdesign.py
 @author: Samuel Niederer
 """
 import sys
+import os
 from datetime import datetime
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
@@ -41,9 +42,12 @@ class Ui_MainWindowUser(Ui_MainWindow):
         self.btnSearchSavePath.clicked.connect(self.selectLog)
         
         # set default value
-        elfPath = r"C:\Users\samue\STM32CubeIDE\workspace_1.4.0\EHS\Debug\EHS.elf"
+        settings = QSettings("OST-HSR", "GDBgui")
+        elfPath = settings.value("LAST_ELF_PATH", "")
+        # elfPath = r"C:\Users\samue\STM32CubeIDE\workspace_1.4.0\EHS\Debug\EHS.elf"
         self.elfPathEdit.setText(elfPath)
-        savePath = "..\logFiles"
+        # savePath = "..\logFiles"
+        savePath = settings.value("LAST_LOG_PATH", "")
         self.savePathEdit.setText(savePath)
         
         self.threads = list()
@@ -62,18 +66,33 @@ class Ui_MainWindowUser(Ui_MainWindow):
         
         
     def selectElf(self):
-        fileName = QtWidgets.QFileDialog.getOpenFileName()[0]
+        settings = QSettings("OST-HSR", "GDBgui")
+        lastPath = settings.value("LAST_ELF_PATH", "")
+        
+        if not os.path.exists(lastPath):
+            lastPath = ""
+        
+        fileName = QtWidgets.QFileDialog.getOpenFileName(None, "Select file", lastPath)[0]
         if fileName:
             self.elfPathEdit.setText(fileName)
+            # save path to settings, as raw string
+            settings.setValue("LAST_ELF_PATH", fr"{fileName}")
     
     
     def selectLog(self):
+        settings = QSettings("OST-HSR", "GDBgui")
+        lastPath = settings.value("LAST_LOG_PATH", "")
+        
+        if not os.path.exists(lastPath):
+            lastPath = ""
         fileName = QFileDialog.getExistingDirectory(None, 
                                                   'Select directory', 
-                                                  "", 
+                                                  lastPath, 
                                                   QFileDialog.ShowDirsOnly)
         if fileName:
             self.savePathEdit.setText(fileName)
+             # save path to settings, as raw string
+            settings.setValue("LAST_LOG_PATH", fr"{fileName}")
     
     def closeEvent(self):
         """ Cleans up everything when the main window gets closed.
@@ -163,13 +182,12 @@ class Ui_MainWindowUser(Ui_MainWindow):
             self.stThread.terminate()
         self.stThread.start()
         
-         # check if there is allready an GDB server running
+          # check if there is allready an GDB server running
         if self.gdbThread.isRunning():
             self.gdbThread.getProcess().terminate()
             self.gdbThread.terminate()
         self.gdbThread.setElfPath(self.elfPathEdit.text())
         self.gdbThread.start() 
-        
         
         
 if __name__ == "__main__":
