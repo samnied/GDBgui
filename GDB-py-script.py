@@ -18,9 +18,9 @@ gdb.execute("set pagination off")
 gdb.execute("set print repeats 0")
 connect()
 
-addr = None
-with open("stackB.txt") as f:
-    addr = str(int(f.read(), 16))
+# addr = None
+# with open("stackB.txt") as f:
+#     addr = str(int(f.read(), 16))
 
 gdb.execute("load")
 gdb.execute("monitor reset")
