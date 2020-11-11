@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sun Nov  1 12:40:53 2020
-generate code from Qt designer with following command
+
+Generate code from Qt designer with following commands
 pyuic5 –x "filename".ui –o "filename".py
 pyuic5 –x QTdesign.ui –o QTdesign.py
 
@@ -23,7 +24,6 @@ from Format import Format
 #adjust for high dpi screen
 QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
      
-    
 class Ui_MainWindowUser(Ui_MainWindow):
     """ This class holds all GUI elements.
     """
@@ -41,17 +41,12 @@ class Ui_MainWindowUser(Ui_MainWindow):
         self.btnSearchElfPath.clicked.connect(self.selectElf)
         self.btnSearchSavePath.clicked.connect(self.selectLog)
         
-        # set default value
+        # set default value for path
         settings = QSettings("OST-HSR", "GDBgui")
         elfPath = settings.value("LAST_ELF_PATH", "")
-        # elfPath = r"C:\Users\samue\STM32CubeIDE\workspace_1.4.0\EHS\Debug\EHS.elf"
         self.elfPathEdit.setText(elfPath)
-        # savePath = "..\logFiles"
         savePath = settings.value("LAST_LOG_PATH", "")
         self.savePathEdit.setText(savePath)
-        
-        self.threads = list()
-        
         
         self.stThread = StThread()
         self.stThread.msg.connect(self.stlinkLog)
@@ -63,7 +58,6 @@ class Ui_MainWindowUser(Ui_MainWindow):
         self.gdbThread.progress.connect(self.progress)
         
         self.progressBar.setValue(0)
-        
         
     def selectElf(self):
         settings = QSettings("OST-HSR", "GDBgui")
@@ -77,7 +71,6 @@ class Ui_MainWindowUser(Ui_MainWindow):
             self.elfPathEdit.setText(fileName)
             # save path to settings, as raw string
             settings.setValue("LAST_ELF_PATH", fr"{fileName}")
-    
     
     def selectLog(self):
         settings = QSettings("OST-HSR", "GDBgui")
@@ -103,7 +96,6 @@ class Ui_MainWindowUser(Ui_MainWindow):
         self.gdbThread.getProcess().terminate()
         self.gdbThread.terminate()
     
-    
     def stlinkLog(self, msg):
         """ Updates the stlink output window.
         """
@@ -117,7 +109,6 @@ class Ui_MainWindowUser(Ui_MainWindow):
                 msg += "\n"
             self.stlinkOutput.insertPlainText(msg)
     
-    
     def gdbLog(self, msg):
         """ Updates the gdb output window.
         """
@@ -130,7 +121,6 @@ class Ui_MainWindowUser(Ui_MainWindow):
             if(not "\n" in msg):
                 msg += "\n"
             self.gdbOutput.appendPlainText(msg)
-    
     
     def measureLog(self, msg):
         """ Updates the measurement output windwow.
@@ -182,7 +172,7 @@ class Ui_MainWindowUser(Ui_MainWindow):
             self.stThread.terminate()
         self.stThread.start()
         
-          # check if there is allready an GDB server running
+        # check if there is allready a GDB server running
         if self.gdbThread.isRunning():
             self.gdbThread.getProcess().terminate()
             self.gdbThread.terminate()
