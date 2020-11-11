@@ -7,3 +7,4 @@ GDBgui-desktop.bat
 GDBgui.bat
 log.txt
 todo.txt
+__pycache__/
