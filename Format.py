@@ -10,7 +10,6 @@ from CodeSize import CodeSize
 from GdbData import GdbData
 
 class Format():
-    
     """ This class formats the data.
     """
     def __init__(self, elfPath, comment):
@@ -20,6 +19,7 @@ class Format():
         self._elfPath = elfPath
         self._title = self.getTitle()
         self.comment = comment
+        self.time = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
         
     @property
     def comment(self):
@@ -130,11 +130,13 @@ class Format():
         """ Saves protocol as .txt file.
         """
         fileName = self.getTitle()
-        fileName += "_" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S") + ".txt"
+        fileName += "_" + self.time + ".txt"
         with open(savePath + "\\" + fileName,  mode="w") as f:
             f.write(self.getProtocol())
             
     def saveCsv(self, savePath):
+        """ Saves protocol as .csv file.
+        """
         s = ""
         d = GdbData()
         cs = CodeSize(self._elfPath)
@@ -149,11 +151,11 @@ class Format():
             s += ','.join([str(i) for i in data[k]]) + "\n"
         
         fileName = self.getTitle()
-        fileName += "_" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S") + ".csv"
+        fileName += "_" + self.time + ".csv"
         with open(savePath + "\\" + fileName,  mode="w") as f:
             f.write(s)
 
 if __name__ == "__main__":           
     f = Format(r"C:\Users\samue\STM32CubeIDE\workspace_1.4.0\EHS\Debug\EHS.elf", "")
     print(f.getProtocol())
-    f.saveCsv("../logFiles")
+    f.saveCsv("..\logFiles")
