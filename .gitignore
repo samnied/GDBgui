@@ -1,8 +1,8 @@
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
 
-.pdf
-.elf
-.bat
-.txt
+*.pdf
+*.elf
+*.bat
+*.txt
 __pycache__/
