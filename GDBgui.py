@@ -174,7 +174,7 @@ class Ui_MainWindowUser(Ui_MainWindow):
         self.measureLog("clear")
         
         # run gdb objdump and save resut to .txt
-        StackInfo.run(self.elfPathEdit.text())         
+        # StackInfo.run(self.elfPathEdit.text())         
     
         # check if there is allready an stlink sever running
         if self.stThread.isRunning():
