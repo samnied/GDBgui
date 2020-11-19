@@ -18,18 +18,10 @@ gdb.execute("set pagination off")
 gdb.execute("set print repeats 0")
 connect()
 
-# addr = None
-# with open("stackB.txt") as f:
-#     addr = str(int(f.read(), 16))
-
 gdb.execute("load")
 gdb.execute("monitor reset")
 
-# gdb.execute("break StackTrace")
-# gdb.execute("continue")
-# gdb.execute("set variable this.stackB =" + addr)
-
-gdb.execute("break end")
+gdb.execute("break GDBlog::end")
 gdb.execute("continue")
 
 data = "t" + gdb.execute("p *this.tBuff@this.tIndex", to_string=True)
