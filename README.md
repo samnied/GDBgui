@@ -8,9 +8,11 @@ This repository contains:
 To get a local copy up and running, follow these steps.
 
 ### Prerequisites
+#### Windows
 If you run windows we recommend to install ananconda
 * [anaconda.com](https://docs.anaconda.com/anaconda/install/windows/)
 
+#### Linux
 If you run linux you ned to install PyQt5
 ```sh
 pip install PyQt5
